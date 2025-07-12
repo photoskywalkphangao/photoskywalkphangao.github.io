@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retail POS System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="logo">
+                <h1>Retail POS</h1>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="#" class="active" id="nav-sales"><i class="fas fa-cash-register"></i> POS</a></li>
+                    <li><a href="#" id="nav-products"><i class="fas fa-boxes"></i> Products</a></li>
+                    <li><a href="#" id="nav-receipts"><i class="fas fa-receipt"></i> Receipts</a></li>
+                    <li><a href="#" id="nav-expenses"><i class="fas fa-money-bill-wave"></i> Expenses</a></li>
+                    <li><a href="#" id="nav-inventory"><i class="fas fa-truck"></i> Inventory</a></li>
+                    <li><a href="#" id="nav-reports"><i class="fas fa-chart-bar"></i> Reports</a></li>
+                </ul>
+            </nav>
+            <div class="user-info">
+                <span id="current-date-time"></span>
+            </div>
+        </header>
+
+        <main class="app-main">
+            <!-- POS/Sales Section -->
+            <section id="sales-section" class="content-section active">
+                <div class="sales-container">
+                    <div class="product-display">
+                        <div class="search-bar">
+                            <input type="text" id="product-search" placeholder="Search products...">
+                            <button id="search-btn"><i class="fas fa-search"></i></button>
+                        </div>
+                        <div class="category-filter">
+                            <select id="category-select">
+                                <option value="all">All Categories</option>
+                            </select>
+                        </div>
+                        <div class="products-grid" id="products-grid">
+                            <!-- Products will be loaded here -->
+                        </div>
+                    </div>
+                    <div class="cart-display">
+                        <div class="cart-header">
+                            <h2>Current Sale</h2>
+                            <div class="cart-actions">
+                                <button id="clear-cart" class="btn-danger">Clear</button>
+                                <button id="hold-cart" class="btn-warning">Hold</button>
+                            </div>
+                        </div>
+                        <div class="cart-items" id="cart-items">
+                            <!-- Cart items will be displayed here -->
+                        </div>
+                        <div class="cart-summary">
+                            <div class="summary-row">
+                                <span>Subtotal:</span>
+                                <span id="subtotal">$0.00</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Discount:</span>
+                                <span id="discount">$0.00</span>
+                            </div>
+                            <div class="summary-row total">
+                                <span>Total:</span>
+                                <span id="total">$0.00</span>
+                            </div>
+                            <div class="promo-section">
+                                <input type="text" id="promo-code" placeholder="Promo code">
+                                <button id="apply-promo" class="btn-secondary">Apply</button>
+                            </div>
+                            <div class="payment-options">
+                                <button id="cash-payment" class="btn-success">Cash</button>
+                                <button id="card-payment" class="btn-primary">Card</button>
+                                <button id="other-payment" class="btn-info">Other</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Products Section -->
+            <section id="products-section" class="content-section">
+                <div class="section-header">
+                    <h2>Product Management</h2>
+                    <button id="add-product-btn" class="btn-primary">Add Product</button>
+                </div>
+                <div class="products-table-container">
+                    <table class="data-table" id="products-table">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Cost</th>
+                                <th>Stock</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="products-table-body">
+                            <!-- Products will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Receipts Section -->
+            <section id="receipts-section" class="content-section">
+                <div class="section-header">
+                    <h2>Sales Receipts</h2>
+                    <div class="date-filter">
+                        <input type="date" id="receipts-date-filter">
+                        <button id="filter-receipts" class="btn-secondary">Filter</button>
+                    </div>
+                </div>
+                <div class="receipts-table-container">
+                    <table class="data-table" id="receipts-table">
+                        <thead>
+                            <tr>
+                                <th>Receipt #</th>
+                                <th>Date</th>
+                                <th>Items</th>
+                                <th>Total</th>
+                                <th>Payment</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="receipts-table-body">
+                            <!-- Receipts will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Expenses Section -->
+            <section id="expenses-section" class="content-section">
+                <div class="section-header">
+                    <h2>Expense Management</h2>
+                    <button id="add-expense-btn" class="btn-primary">Add Expense</button>
+                </div>
+                <div class="expenses-table-container">
+                    <table class="data-table" id="expenses-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Category</th>
+                                <th>Amount</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expenses-table-body">
+                            <!-- Expenses will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Inventory Section -->
+            <section id="inventory-section" class="content-section">
+                <div class="section-header">
+                    <h2>Inventory Management</h2>
+                    <button id="add-inventory-btn" class="btn-primary">Receive Stock</button>
+                </div>
+                <div class="inventory-table-container">
+                    <table class="data-table" id="inventory-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Product</th>
+                                <th>Supplier</th>
+                                <th>Quantity</th>
+                                <th>Unit Cost</th>
+                                <th>Total Cost</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventory-table-body">
+                            <!-- Inventory records will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Reports Section -->
+            <section id="reports-section" class="content-section">
+                <div class="section-header">
+                    <h2>Reports</h2>
+                    <div class="report-period">
+                        <select id="report-period">
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                        <input type="date" id="report-date">
+                        <button id="generate-report" class="btn-primary">Generate</button>
+                    </div>
+                </div>
+                <div class="report-container">
+                    <div class="report-summary">
+                        <div class="summary-card">
+                            <h3>Total Sales</h3>
+                            <p id="total-sales">$0.00</p>
+                        </div>
+                        <div class="summary-card">
+                            <h3>Total Expenses</h3>
+                            <p id="total-expenses">$0.00</p>
+                        </div>
+                        <div class="summary-card">
+                            <h3>Gross Profit</h3>
+                            <p id="gross-profit">$0.00</p>
+                        </div>
+                        <div class="summary-card">
+                            <h3>Net Profit</h3>
+                            <p id="net-profit">$0.00</p>
+                        </div>
+                    </div>
+                    <div class="report-charts">
+                        <canvas id="sales-chart" width="400" height="200"></canvas>
+                        <canvas id="profit-chart" width="400" height="200"></canvas>
+                    </div>
+                    <div class="report-details">
+                        <div class="top-products">
+                            <h3>Top Selling Products</h3>
+                            <table class="data-table" id="top-products-table">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Quantity Sold</th>
+                                        <th>Total Revenue</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="top-products-body">
+                                    <!-- Top products will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="expense-breakdown">
+                            <h3>Expense Breakdown</h3>
+                            <table class="data-table" id="expense-breakdown-table">
+                                <thead>
+                                    <tr>
+                                        <th>Category</th>
+                                        <th>Amount</th>
+                                        <th>Percentage</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="expense-breakdown-body">
+                                    <!-- Expense breakdown will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Modal Structure -->
+        <div class="modal" id="product-modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2 id="product-modal-title">Add New Product</h2>
+                <form id="product-form">
+                    <div class="form-group">
+                        <label for="product-name">Product Name</label>
+                        <input type="text" id="product-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-category">Category</label>
+                        <select id="product-category" required>
+                            <option value="">Select Category</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-price">Selling Price</label>
+                        <input type="number" id="product-price" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-cost">Cost Price</label>
+                        <input type="number" id="product-cost" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-stock">Initial Stock</label>
+                        <input type="number" id="product-stock" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-image">Product Image</label>
+                        <input type="file" id="product-image" accept="image/*">
+                        <div class="image-preview" id="product-image-preview"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-description">Description</label>
+                        <textarea id="product-description" rows="3"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary close-modal-btn">Cancel</button>
+                        <button type="submit" class="btn-primary">Save Product</button>
+                    </div>
+                    <input type="hidden" id="product-id">
+                </form>
+            </div>
+        </div>
+
+        <div class="modal" id="expense-modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2 id="expense-modal-title">Add New Expense</h2>
+                <form id="expense-form">
+                    <div class="form-group">
+                        <label for="expense-date">Date</label>
+                        <input type="date" id="expense-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="expense-description">Description</label>
+                        <input type="text" id="expense-description" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="expense-category">Category</label>
+                        <select id="expense-category" required>
+                            <option value="">Select Category</option>
+                            <option value="Rent">Rent</option>
+                            <option value="Utilities">Utilities</option>
+                            <option value="Salaries">Salaries</option>
+                            <option value="Supplies">Supplies</option>
+                            <option value="Maintenance">Maintenance</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="expense-amount">Amount</label>
+                        <input type="number" id="expense-amount" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary close-modal-btn">Cancel</button>
+                        <button type="submit" class="btn-primary">Save Expense</button>
+                    </div>
+                    <input type="hidden" id="expense-id">
+                </form>
+            </div>
+        </div>
+
+        <div class="modal" id="inventory-modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2 id="inventory-modal-title">Receive New Inventory</h2>
+                <form id="inventory-form">
+                    <div class="form-group">
+                        <label for="inventory-date">Date Received</label>
+                        <input type="date" id="inventory-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inventory-product">Product</label>
+                        <select id="inventory-product" required>
+                            <option value="">Select Product</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="inventory-supplier">Supplier</label>
+                        <input type="text" id="inventory-supplier" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inventory-quantity">Quantity</label>
+                        <input type="number" id="inventory-quantity" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inventory-unit-cost">Unit Cost</label>
+                        <input type="number" id="inventory-unit-cost" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary close-modal-btn">Cancel</button>
+                        <button type="submit" class="btn-primary">Receive Inventory</button>
+                    </div>
+                    <input type="hidden" id="inventory-id">
+                </form>
+            </div>
+        </div>
+
+        <div class="modal" id="receipt-modal">
+            <div class="modal-content wide-modal">
+                <span class="close-modal">&times;</span>
+                <h2>Receipt Details</h2>
+                <div class="receipt-details" id="receipt-details-content">
+                    <!-- Receipt details will be loaded here -->
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary close-modal-btn">Close</button>
+                    <button class="btn-primary" id="print-receipt">Print Receipt</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="notification" id="notification"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
