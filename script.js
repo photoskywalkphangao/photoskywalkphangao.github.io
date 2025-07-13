@@ -2,9 +2,124 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize the application
     initApp();
 });
-
+const waterProducts = [
+    {
+        id: 101,
+        name: "น้ำดื่มคริสตัล",
+        category: "น้ำดื่ม",
+        price: 10,
+        cost: 6,
+        stock: 100,
+        description: "น้ำดื่มบรรจุขวดขนาด 600 มล."
+    },
+    {
+        id: 102,
+        name: "น้ำดื่มสิงห์",
+        category: "น้ำดื่ม",
+        price: 12,
+        cost: 7,
+        stock: 80,
+        description: "น้ำดื่มบรรจุขวดขนาด 600 มล."
+    },
+    {
+        id: 103,
+        name: "น้ำแร่สปริงเกิล",
+        category: "น้ำดื่ม",
+        price: 15,
+        cost: 9,
+        stock: 60,
+        description: "น้ำแร่ธรรมชาติขวด 500 มล."
+    }
+];
+const snackProducts = [
+    {
+        id: 201,
+        name: "ขนมทอดกรอบลยส์",
+        category: "ขนม",
+        price: 20,
+        cost: 12,
+        stock: 50,
+        description: "ขนมถุงขนาด 50 กรัม"
+    },
+    {
+        id: 202,
+        name: "ขนมปังกรอบ",
+        category: "ขนม",
+        price: 15,
+        cost: 8,
+        stock: 70,
+        description: "ขนมปังกรอบรสชาติเดิม"
+    },
+    {
+        id: 203,
+        name: "ช็อกโกแลตคิทแคท",
+        category: "ขนม",
+        price: 25,
+        cost: 15,
+        stock: 40,
+        description: "ช็อกโกแลตแท่งขนาดมาตรฐาน"
+    }
+];
+const herbProducts = [
+    {
+        id: 301,
+        name: "ยาอบสมุนไพร",
+        category: "สมุนไพร",
+        price: 150,
+        cost: 80,
+        stock: 30,
+        description: "สมุนไพรอบสำหรับสระผม"
+    },
+    {
+        id: 302,
+        name: "น้ำมันไพล",
+        category: "สมุนไพร",
+        price: 120,
+        cost: 60,
+        stock: 25,
+        description: "น้ำมันไพลบรรจุขวด 50 มล."
+    },
+    {
+        id: 303,
+        name: "ชาสมุนไพร",
+        category: "สมุนไพร",
+        price: 40,
+        cost: 20,
+        stock: 60,
+        description: "ชาสมุนไพรบรรจุซอง 20 ซอง"
+    }
+];
+const otherProducts = [
+    {
+        id: 401,
+        name: "ถ่านไฟฉาย AA",
+        category: "อื่นๆ",
+        price: 40,
+        cost: 25,
+        stock: 40,
+        description: "ถ่านไฟฉายขนาด AA แพ็ค 2 ก้อน"
+    },
+    {
+        id: 402,
+        name: "หลอดไฟ LED",
+        category: "อื่นๆ",
+        price: 80,
+        cost: 50,
+        stock: 20,
+        description: "หลอดไฟ LED ขนาด 9 วัตต์"
+    },
+    {
+        id: 403,
+        name: "แปรงสีฟัน",
+        category: "อื่นๆ",
+        price: 30,
+        cost: 15,
+        stock: 50,
+        description: "แปรงสีฟันขนนุ่ม"
+    }
+];
 function initApp() {
-    // Initialize all components
+    // เรียกฟังก์ชันเริ่มต้นต่างๆ
     initNavigation();
     initDateTime();
     initProductManagement();
@@ -14,10 +129,13 @@ function initApp() {
     initReports();
     initModals();
     
-    // Load initial data
+    // โหลดข้อมูลเริ่มต้น
     loadInitialData();
     
-    // Show sales section by default
+    // (Optional) สามารถเรียกใช้ addSampleProducts() โดยอัตโนมัติได้หากต้องการ
+    // addSampleProducts();
+    
+    // แสดงส่วน POS เป็นค่าเริ่มต้น
     showSection('sales-section');
 }
 
@@ -127,8 +245,29 @@ function initProductManagement() {
             reader.readAsDataURL(file);
         }
     });
+        document.getElementById('add-sample-products-btn').addEventListener('click', function() {
+        addSampleProducts();
+    });
+}
+function getNextProductId() {
+    if (products.length === 0) return 1;
+    return Math.max(...products.map(p => p.id)) + 1;
 }
 
+// ในฟังก์ชัน addSampleProducts() ควรแก้ไข ID ให้เหมาะสม
+function addSampleProducts() {
+    // ...
+    let nextId = getNextProductId();
+    
+    const newProducts = [
+        ...waterProducts.map(p => ({ ...p, id: nextId++ })),
+        ...snackProducts.map(p => ({ ...p, id: nextId++ })),
+        // ...
+    ];
+    
+    products = [...products, ...newProducts];
+    // ...
+}
 // Initialize sales POS
 function initSalesPOS() {
     // Search functionality
@@ -240,63 +379,50 @@ function closeAllModals() {
 
 // Load initial data from localStorage
 function loadInitialData() {
-    // Load products
+    // ตั้งค่าหมวดหมู่
+    categories = ['น้ำดื่ม', 'ขนม', 'สมุนไพร', 'อื่นๆ'];
+    
+    // ตรวจสอบว่ามีสินค้าใน localStorage หรือไม่
     const savedProducts = localStorage.getItem('pos-products');
-    if (savedProducts) {
-        products = JSON.parse(savedProducts);
-    } else {
-        // Sample products if none exist
+    
+    if (!savedProducts) {
+        // ถ้าไม่มีข้อมูลใน localStorage ให้ใช้ข้อมูลตัวอย่าง
         products = [
-            { id: 1, name: 'T-Shirt', category: 'Clothing', price: 19.99, cost: 10.00, stock: 50, image: '', description: 'Basic cotton t-shirt' },
-            { id: 2, name: 'Jeans', category: 'Clothing', price: 49.99, cost: 25.00, stock: 30, image: '', description: 'Blue denim jeans' },
-            { id: 3, name: 'Sneakers', category: 'Footwear', price: 79.99, cost: 40.00, stock: 20, image: '', description: 'Running sneakers' },
-            { id: 4, name: 'Backpack', category: 'Accessories', price: 39.99, cost: 20.00, stock: 15, image: '', description: 'School backpack' }
+            ...waterProducts,
+            ...snackProducts,
+            ...herbProducts,
+            ...otherProducts
         ];
         localStorage.setItem('pos-products', JSON.stringify(products));
+    } else {
+        products = JSON.parse(savedProducts);
     }
     
-    // Load categories from products
-    categories = [...new Set(products.map(product => product.category))];
     refreshCategoryFilters();
-    
-    // Load sales
-    const savedSales = localStorage.getItem('pos-sales');
-    if (savedSales) {
-        sales = JSON.parse(savedSales);
-    }
-    
-    // Load expenses
-    const savedExpenses = localStorage.getItem('pos-expenses');
-    if (savedExpenses) {
-        expenses = JSON.parse(savedExpenses);
-    }
-    
-    // Load inventory
-    const savedInventory = localStorage.getItem('pos-inventory');
-    if (savedInventory) {
-        inventory = JSON.parse(savedInventory);
-    }
-    
-    // Load held carts
-    const savedHeldCarts = localStorage.getItem('pos-held-carts');
-    if (savedHeldCarts) {
-        heldCarts = JSON.parse(savedHeldCarts);
-    }
-    
-    // Load current receipt ID
-    const savedReceiptId = localStorage.getItem('pos-receipt-id');
-    if (savedReceiptId) {
-        currentReceiptId = parseInt(savedReceiptId);
-    }
-    
-    // Refresh all displays
     refreshProductsGrid();
     refreshProductsTable();
-    refreshReceiptsTable();
-    refreshExpensesTable();
-    refreshInventoryTable();
 }
-
+function addSampleProducts() {
+    // ตรวจสอบว่ามีสินค้าอยู่แล้วหรือไม่
+    if (products.length > 0) {
+        if (!confirm('ระบบมีสินค้าอยู่แล้ว คุณต้องการเพิ่มสินค้าตัวอย่างซ้ำหรือไม่?')) {
+            return;
+        }
+    }
+    
+    // เพิ่มสินค้าตัวอย่างทั้งหมด
+    products = [
+        ...waterProducts,
+        ...snackProducts,
+        ...herbProducts,
+        ...otherProducts
+    ];
+    
+    saveAllData();
+    refreshProductsGrid();
+    refreshProductsTable();
+    showNotification('เพิ่มสินค้าตัวอย่างเรียบร้อยแล้ว');
+}
 // Save all data to localStorage
 function saveAllData() {
     localStorage.setItem('pos-products', JSON.stringify(products));
@@ -316,11 +442,12 @@ function refreshCategoryFilters() {
         select.innerHTML = '';
         
         if (select.id === 'category-select') {
-            select.innerHTML = '<option value="all">All Categories</option>';
+            select.innerHTML = '<option value="all">ทั้งหมด</option>';
         } else {
-            select.innerHTML = '<option value="">Select Category</option>';
+            select.innerHTML = '<option value="">เลือกหมวดหมู่</option>';
         }
         
+        // เพิ่มหมวดหมู่ตามที่กำหนด
         categories.forEach(category => {
             const option = document.createElement('option');
             option.value = category;
@@ -340,11 +467,68 @@ function openProductModal(product = null) {
     const modal = document.getElementById('product-modal');
     const form = document.getElementById('product-form');
     const title = document.getElementById('product-modal-title');
+    const imageInput = document.getElementById('product-image');
     const imagePreview = document.getElementById('product-image-preview');
+     imageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            // ตรวจสอบขนาดไฟล์ (ไม่เกิน 2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                showNotification('ขนาดไฟล์รูปภาพไม่ควรเกิน 2MB', 'error');
+                return;
+            }
+            
+            // ตรวจสอบประเภทไฟล์
+            const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+            if (!validTypes.includes(file.type)) {
+                showNotification('รองรับเฉพาะไฟล์รูปภาพ (JPEG, PNG, GIF)', 'error');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                // สร้าง Image object เพื่อตรวจสอบขนาด
+                const img = new Image();
+                img.onload = function() {
+                    // กำหนดขนาดสูงสุดที่ต้องการ
+                    const MAX_WIDTH = 800;
+                    const MAX_HEIGHT = 800;
+                    
+                    // คำนวณขนาดใหม่หากรูปใหญ่เกินไป
+                    let width = img.width;
+                    let height = img.height;
+                    
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+                    
+                    // สร้าง canvas เพื่อปรับขนาดรูปภาพ
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // แสดงตัวอย่างรูปภาพ
+                    imagePreview.innerHTML = `<img src="${canvas.toDataURL('image/jpeg', 0.8)}" class="modal-product-image" alt="Preview">`;
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
     
     if (product) {
         // Edit mode
-        title.textContent = 'Edit Product';
+        title.textContent = 'แก้ไขสินค้า';
         document.getElementById('product-id').value = product.id;
         document.getElementById('product-name').value = product.name;
         document.getElementById('product-category').value = product.category;
@@ -360,7 +544,7 @@ function openProductModal(product = null) {
         }
     } else {
         // Add mode
-        title.textContent = 'Add New Product';
+        title.textContent = 'เพิ่มสินค้าใหม่';
         form.reset();
         imagePreview.innerHTML = '';
         document.getElementById('product-id').value = '';
@@ -379,6 +563,7 @@ function saveProduct() {
     const productStock = parseInt(document.getElementById('product-stock').value);
     const productDescription = document.getElementById('product-description').value;
     const imageFile = document.getElementById('product-image').files[0];
+    
     
     // Validate
     if (!productName || !productCategory || isNaN(productPrice) || isNaN(productCost) || isNaN(productStock)) {
@@ -455,7 +640,19 @@ function saveProduct() {
 function refreshProductsTable() {
     const tbody = document.getElementById('products-table-body');
     tbody.innerHTML = '';
-    
+        // สร้างหัวตารางใหม่
+    const thead = document.querySelector('#products-table thead');
+    thead.innerHTML = `
+        <tr>
+            <th>รูปภาพ</th>
+            <th>ชื่อสินค้า</th>
+            <th>หมวดหมู่</th>
+            <th>ราคาขาย</th>
+            <th>ต้นทุน</th>
+            <th>คงเหลือ</th>
+            <th>การดำเนินการ</th>
+        </tr>
+    `;
     products.forEach(product => {
         const row = document.createElement('tr');
         
@@ -463,8 +660,8 @@ function refreshProductsTable() {
             <td>${product.image ? `<img src="${product.image}" alt="${product.name}" class="table-product-image">` : ''}</td>
             <td>${product.name}</td>
             <td>${product.category}</td>
-            <td>$${product.price.toFixed(2)}</td>
-            <td>$${product.cost.toFixed(2)}</td>
+            <td>${formatCurrency(product.price)}</td>
+            <td>${formatCurrency(product.cost)}</td>
             <td>${product.stock}</td>
             <td>
                 <button class="action-btn edit-btn" data-id="${product.id}"><i class="fas fa-edit"></i></button>
@@ -474,7 +671,7 @@ function refreshProductsTable() {
         
         tbody.appendChild(row);
     });
-    
+        
     // Add event listeners to edit and delete buttons
     document.querySelectorAll('.edit-btn').forEach(btn => {
         btn.addEventListener('click', function() {
@@ -513,7 +710,7 @@ function refreshProductsGrid() {
     grid.innerHTML = '';
     
     products.forEach(product => {
-        if (product.stock > 0) { // Only show products with stock
+        if (product.stock > 0) {
             const card = document.createElement('div');
             card.className = 'product-card';
             card.setAttribute('data-id', product.id);
@@ -521,8 +718,8 @@ function refreshProductsGrid() {
             card.innerHTML = `
                 ${product.image ? `<img src="${product.image}" class="product-image" alt="${product.name}">` : '<div class="product-image"><i class="fas fa-box-open"></i></div>'}
                 <div class="product-name">${product.name}</div>
-                <div class="product-price">$${product.price.toFixed(2)}</div>
-                <div class="product-stock">${product.stock} in stock</div>
+                <div class="product-price">${formatCurrency(product.price)}</div>
+                <div class="product-stock">คงเหลือ ${product.stock} ชิ้น</div>
             `;
             
             card.addEventListener('click', function() {
@@ -536,21 +733,20 @@ function refreshProductsGrid() {
 
 function refreshProductSelects() {
     const productSelect = document.getElementById('inventory-product');
-    if (productSelect) {
-        const currentValue = productSelect.value;
-        productSelect.innerHTML = '<option value="">Select Product</option>';
-        
-        products.forEach(product => {
-            const option = document.createElement('option');
-            option.value = product.id;
-            option.textContent = product.name;
-            productSelect.appendChild(option);
-        });
-        
-        // Restore previous selection if it still exists
-        if (currentValue && products.some(p => p.id == currentValue)) {
-            productSelect.value = currentValue;
-        }
+    if (!productSelect) return;
+
+    const currentValue = productSelect.value;
+    productSelect.innerHTML = '<option value="">เลือกสินค้า</option>';
+
+    products.forEach(product => {
+        const option = document.createElement('option');
+        option.value = product.id;
+        option.textContent = `${product.name} (คงเหลือ: ${product.stock} ชิ้น)`;
+        productSelect.appendChild(option);
+    });
+
+    if (currentValue && products.some(p => p.id == currentValue)) {
+        productSelect.value = currentValue;
     }
 }
 
@@ -646,7 +842,7 @@ function refreshCartDisplay() {
         itemElement.innerHTML = `
             <div class="cart-item-info">
                 <div class="cart-item-name">${item.name}</div>
-                <div class="cart-item-price">$${item.price.toFixed(2)} each</div>
+                <div class="cart-item-price">=ชิ้นละ ฿${item.price.toFixed(2)} </div>
             </div>
             <div class="cart-item-quantity">
                 <button class="decrease-qty" data-index="${index}">-</button>
@@ -722,24 +918,32 @@ function updateCartSummary() {
     const discount = 0; // Will be calculated when promo applied
     const total = subtotal - discount;
     
-    document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
-    document.getElementById('discount').textContent = `$${discount.toFixed(2)}`;
-    document.getElementById('total').textContent = `$${total.toFixed(2)}`;
+    document.getElementById('subtotal').textContent = formatCurrency(subtotal);
+    document.getElementById('discount').textContent = formatCurrency(discount);
+    document.getElementById('total').textContent = formatCurrency(total);
+}
+
+function formatCurrency(amount) {
+    // แสดงผลเป็น "฿1,234.56" หรือ "1,234.56 บาท" แล้วแต่ต้องการ
+    return '฿' + amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+    
+    // หรือถ้าต้องการแสดงคำว่า "บาท" แทนสัญลักษณ์
+    // return amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + ' บาท';
 }
 
 function clearCart() {
     if (cart.length === 0) return;
     
-    if (confirm('Are you sure you want to clear the cart?')) {
+    if (confirm('คุณแน่ใจหรือไม่ว่าต้องการล้างตะกร้าสินค้า?')) {
         cart = [];
         refreshCartDisplay();
-        showNotification('Cart cleared');
+        showNotification('ล้างตะกร้าสินค้าเรียบร้อยแล้ว');
     }
 }
 
 function holdCart() {
     if (cart.length === 0) {
-        showNotification('Cart is empty', 'warning');
+        showNotification('ไม่มีสินค้าในตะกร้า', 'warning');
         return;
     }
     
@@ -752,7 +956,7 @@ function holdCart() {
     cart = [];
     refreshCartDisplay();
     saveAllData();
-    showNotification('Cart held successfully');
+    showNotification('เก็บตะกร้าสินค้าเรียบร้อยแล้ว');
 }
 
 function applyPromoCode() {
@@ -786,7 +990,7 @@ function applyPromoCode() {
 
 function processPayment(paymentMethod) {
     if (cart.length === 0) {
-        showNotification('Cart is empty', 'warning');
+        showNotification('ไม่มีสินค้าในตะกร้า', 'warning');
         return;
     }
     
@@ -829,7 +1033,7 @@ function processPayment(paymentMethod) {
     // Show receipt
     showReceipt(receipt);
     
-    showNotification('Sale completed successfully');
+    showNotification('บันทึกการขายเรียบร้อยแล้ว');
 }
 
 function showReceipt(receipt) {
@@ -837,44 +1041,50 @@ function showReceipt(receipt) {
     
     receiptContent.innerHTML = `
         <div class="receipt-header">
-            <h3>Retail POS</h3>
-            <p>123 Main Street, City</p>
-            <p>Tel: (123) 456-7890</p>
+            <h3>ใบเสร็จรับเงิน</h3>
+            <p>ที่อยู่ร้าน: 123 ถนนหลัก, กรุงเทพฯ</p>
+            <p>โทรศัพท์: 02-123-4567</p>
         </div>
         <div class="receipt-info">
             <div>
-                <p><strong>Receipt #:</strong> ${receipt.id}</p>
-                <p><strong>Date:</strong> ${new Date(receipt.date).toLocaleString()}</p>
+                <p><strong>เลขที่ใบเสร็จ:</strong> ${receipt.id}</p>
+                <p><strong>วันที่:</strong> ${new Date(receipt.date).toLocaleString()}</p>
             </div>
             <div>
-                <p><strong>Cashier:</strong> User</p>
-                <p><strong>Payment:</strong> ${receipt.paymentMethod}</p>
+                <p><strong>พนักงานขาย:</strong> ผู้ใช้งาน</p>
+                <p><strong>วิธีการชำระ:</strong> ${receipt.paymentMethod === 'Cash' ? 'เงินสด' : receipt.paymentMethod === 'Card' ? 'บัตรเครดิต' : 'อื่นๆ'}</p>
             </div>
         </div>
         <div class="receipt-items">
+            <div class="receipt-item header">
+                <div><strong>รายการ</strong></div>
+                <div><strong>จำนวน</strong></div>
+                <div><strong>ราคา</strong></div>
+            </div>
             ${receipt.items.map(item => `
                 <div class="receipt-item">
-                    <div>${item.name} x${item.quantity}</div>
-                    <div>$${(item.price * item.quantity).toFixed(2)}</div>
+                    <div>${item.name}</div>
+                    <div>${item.quantity} ชิ้น</div>
+                    <div>${formatCurrency(item.price * item.quantity)}</div>
                 </div>
             `).join('')}
         </div>
         <div class="receipt-totals">
             <div class="receipt-total-row">
-                <span>Subtotal:</span>
-                <span>$${receipt.subtotal.toFixed(2)}</span>
+                <span>รวม:</span>
+                <span>${formatCurrency(receipt.subtotal)}</span>
             </div>
             <div class="receipt-total-row">
-                <span>Discount:</span>
-                <span>$${receipt.discount.toFixed(2)}</span>
+                <span>ส่วนลด:</span>
+                <span>${formatCurrency(receipt.discount)}</span>
             </div>
             <div class="receipt-total-row total">
-                <span>Total:</span>
-                <span>$${receipt.total.toFixed(2)}</span>
+                <span>รวมสุทธิ:</span>
+                <span>${formatCurrency(receipt.total)}</span>
             </div>
         </div>
         <div class="receipt-footer">
-            <p>Thank you for your purchase!</p>
+            <p>ขอบคุณที่ใช้บริการ</p>
         </div>
     `;
     
@@ -889,7 +1099,7 @@ function openExpenseModal(expense = null) {
     
     if (expense) {
         // Edit mode
-        title.textContent = 'Edit Expense';
+        title.textContent = 'แก้ไขค่าใช้จ่าย';
         document.getElementById('expense-id').value = expense.id;
         document.getElementById('expense-date').value = expense.date.split('T')[0];
         document.getElementById('expense-description').value = expense.description;
@@ -897,7 +1107,7 @@ function openExpenseModal(expense = null) {
         document.getElementById('expense-amount').value = expense.amount;
     } else {
         // Add mode
-        title.textContent = 'Add New Expense';
+        title.textContent = 'เพิ่มค่าใช้จ่ายใหม่';
         form.reset();
         document.getElementById('expense-id').value = '';
         document.getElementById('expense-date').valueAsDate = new Date();
@@ -954,6 +1164,16 @@ function refreshExpensesTable() {
     const tbody = document.getElementById('expenses-table-body');
     tbody.innerHTML = '';
     
+    const thead = document.querySelector('#expenses-table thead');
+    thead.innerHTML = `
+        <tr>
+            <th>วันที่</th>
+            <th>รายการ</th>
+            <th>หมวดหมู่</th>
+            <th>จำนวนเงิน</th>
+            <th>การดำเนินการ</th>
+        </tr>
+    `;   
     expenses.forEach(expense => {
         const row = document.createElement('tr');
         
@@ -1007,10 +1227,9 @@ function openInventoryModal(inventoryRecord = null) {
     const modal = document.getElementById('inventory-modal');
     const form = document.getElementById('inventory-form');
     const title = document.getElementById('inventory-modal-title');
-    
+
     if (inventoryRecord) {
-        // Edit mode
-        title.textContent = 'Edit Inventory Record';
+        title.textContent = 'แก้ไขการรับสินค้า';
         document.getElementById('inventory-id').value = inventoryRecord.id;
         document.getElementById('inventory-date').value = inventoryRecord.date.split('T')[0];
         document.getElementById('inventory-product').value = inventoryRecord.productId;
@@ -1018,16 +1237,17 @@ function openInventoryModal(inventoryRecord = null) {
         document.getElementById('inventory-quantity').value = inventoryRecord.quantity;
         document.getElementById('inventory-unit-cost').value = inventoryRecord.unitCost;
     } else {
-        // Add mode
-        title.textContent = 'Receive New Inventory';
+        title.textContent = 'รับสินค้าใหม่';
         form.reset();
         document.getElementById('inventory-id').value = '';
         document.getElementById('inventory-date').valueAsDate = new Date();
     }
+
+    // อัพเดท dropdown เมื่อเปิด modal
+    refreshProductSelects();
     
     modal.classList.add('active');
 }
-
 function saveInventory() {
     const form = document.getElementById('inventory-form');
     const inventoryId = document.getElementById('inventory-id').value;
@@ -1036,31 +1256,32 @@ function saveInventory() {
     const inventorySupplier = document.getElementById('inventory-supplier').value;
     const inventoryQuantity = parseInt(document.getElementById('inventory-quantity').value);
     const inventoryUnitCost = parseFloat(document.getElementById('inventory-unit-cost').value);
-    
-    // Validate
-    if (!inventoryDate || isNaN(inventoryProductId) || !inventorySupplier || isNaN(inventoryQuantity) || isNaN(inventoryUnitCost)) {
-        showNotification('Please fill all required fields with valid values', 'error');
+
+    // ตรวจสอบข้อมูล
+    if (!inventoryDate || isNaN(inventoryProductId) || !inventorySupplier || 
+        isNaN(inventoryQuantity) || isNaN(inventoryUnitCost)) {
+        showNotification('กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง', 'error');
         return;
     }
-    
+
     const product = products.find(p => p.id === inventoryProductId);
     if (!product) {
-        showNotification('Selected product not found', 'error');
+        showNotification('ไม่พบสินค้าที่เลือก', 'error');
         return;
     }
-    
+
     if (inventoryId) {
-        // Update existing inventory record
+        // แก้ไขการรับสินค้า
         const index = inventory.findIndex(i => i.id == inventoryId);
         if (index !== -1) {
-            // First reverse the previous stock addition
+            // คืนจำนวนสินค้าเดิมก่อน
             const prevRecord = inventory[index];
             const prevProduct = products.find(p => p.id === prevRecord.productId);
             if (prevProduct) {
                 prevProduct.stock -= prevRecord.quantity;
             }
-            
-            // Then update the record and add the new stock
+
+            // อัพเดทข้อมูล
             inventory[index] = {
                 id: parseInt(inventoryId),
                 date: inventoryDate,
@@ -1071,11 +1292,12 @@ function saveInventory() {
                 unitCost: inventoryUnitCost,
                 totalCost: inventoryQuantity * inventoryUnitCost
             };
-            
+
+            // เพิ่มจำนวนสินค้าใหม่
             product.stock += inventoryQuantity;
         }
     } else {
-        // Add new inventory record
+        // เพิ่มการรับสินค้าใหม่
         const newId = inventory.length > 0 ? Math.max(...inventory.map(i => i.id)) + 1 : 1;
         inventory.push({
             id: newId,
@@ -1087,23 +1309,35 @@ function saveInventory() {
             unitCost: inventoryUnitCost,
             totalCost: inventoryQuantity * inventoryUnitCost
         });
-        
-        // Update product stock
+
+        // อัพเดทสต็อกสินค้า
         product.stock += inventoryQuantity;
     }
-    
+
     saveAllData();
     refreshInventoryTable();
     refreshProductsGrid();
     refreshProductsTable();
+    refreshProductSelects(); // อัพเดท dropdown ใหม่
     closeAllModals();
-    showNotification('Inventory record saved successfully');
+    showNotification('บันทึกการรับสินค้าเรียบร้อยแล้ว');
 }
-
 function refreshInventoryTable() {
     const tbody = document.getElementById('inventory-table-body');
     tbody.innerHTML = '';
     
+    const thead = document.querySelector('#inventory-table thead');
+    thead.innerHTML = `
+        <tr>
+            <th>วันที่</th>
+            <th>สินค้า</th>
+            <th>ผู้ผลิต/ซัพพลายเออร์</th>
+            <th>จำนวน</th>
+            <th>ต้นทุนต่อหน่วย</th>
+            <th>รวมต้นทุน</th>
+            <th>การดำเนินการ</th>
+        </tr>
+    `;
     inventory.forEach(record => {
         const row = document.createElement('tr');
         
@@ -1169,6 +1403,17 @@ function refreshReceiptsTable() {
     const tbody = document.getElementById('receipts-table-body');
     tbody.innerHTML = '';
     
+    const thead = document.querySelector('#receipts-table thead');
+    thead.innerHTML = `
+        <tr>
+            <th>เลขที่ใบเสร็จ</th>
+            <th>วันที่</th>
+            <th>จำนวนรายการ</th>
+            <th>รวมเงิน</th>
+            <th>การชำระเงิน</th>
+            <th>การดำเนินการ</th>
+        </tr>
+    `;  
     sales.forEach(receipt => {
         const row = document.createElement('tr');
         
@@ -1243,7 +1488,12 @@ function filterReceiptsByDate(date) {
 // REPORTS FUNCTIONS
 function generateReport(period, date) {
     if (!date) date = new Date();
-    
+        let periodName = '';
+    switch (period) {
+        case 'daily': periodName = 'รายวัน'; break;
+        case 'weekly': periodName = 'รายสัปดาห์'; break;
+        case 'monthly': periodName = 'รายเดือน'; break;
+    }
     let startDate, endDate;
     const reportDate = new Date(date);
     
@@ -1532,9 +1782,17 @@ function updateCharts(salesData, expensesData, period, date) {
 // UTILITY FUNCTIONS
 function showNotification(message, type = 'success') {
     const notification = document.getElementById('notification');
-    notification.textContent = message;
-    notification.className = 'notification show ' + type;
+    if (type === 'success') {
+        notification.className = 'notification show success';
+    } else if (type === 'error') {
+        notification.className = 'notification show error';
+        message = 'ข้อผิดพลาด: ' + message;
+    } else if (type === 'warning') {
+        notification.className = 'notification show warning';
+        message = 'คำเตือน: ' + message;
+    }
     
+    notification.textContent = message;
     setTimeout(() => {
         notification.classList.remove('show');
     }, 3000);
