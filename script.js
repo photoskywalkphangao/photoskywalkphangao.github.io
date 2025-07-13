@@ -143,6 +143,9 @@ function initApp() {
     initReports();
     initModals();
     
+    // ตั้งค่า real-time listener
+    setupRealtimeListeners();
+
     // โหลดข้อมูลเริ่มต้น
     loadInitialData();
     
@@ -405,14 +408,14 @@ async function loadInitialData() {
       heldCarts = data.heldCarts || [];
       currentReceiptId = data.currentReceiptId || 1000;
     } else {
-      // ข้อมูลเริ่มต้นถ้าไม่มีข้อมูลใน Firebase
+      // ข้อมูลเริ่มต้นถ้าไม่มีใน Firebase
       await initializeSampleData();
     }
     
     refreshAllDisplays();
   } catch (error) {
     console.error("Error loading data:", error);
-    showNotification('เกิดข้อผิดพลาดในการโหลดข้อมูล', 'error');
+    showNotification('โหลดข้อมูลไม่สำเร็จ', 'error');
   }
 }
 
@@ -427,13 +430,14 @@ async function saveAllData() {
       heldCarts,
       currentReceiptId
     });
+    console.log("Data saved to Firebase");
   } catch (error) {
     console.error("Error saving data:", error);
-    showNotification('เกิดข้อผิดพลาดในการบันทึกข้อมูล', 'error');
+    showNotification('บันทึกข้อมูลไม่สำเร็จ', 'error');
   }
 }
 
-function setupRealtimeListeners() {
+function setupRealtimeUpdates() {
   database.ref('posData').on('value', (snapshot) => {
     const data = snapshot.val();
     if (data) {
@@ -442,7 +446,7 @@ function setupRealtimeListeners() {
       // อัพเดท state อื่นๆ...
       
       refreshAllDisplays();
-      showNotification('อัพเดทข้อมูลล่าสุดเรียบร้อยแล้ว', 'success');
+      showNotification('อัพเดทข้อมูลล่าสุด', 'info');
     }
   });
 }
@@ -609,7 +613,7 @@ function openProductModal(product = null) {
     modal.classList.add('active');
 }
 
-function saveProduct() {
+async function saveProduct() {
     const form = document.getElementById('product-form');
     const productId = document.getElementById('product-id').value;
     const productName = document.getElementById('product-name').value;
@@ -690,7 +694,25 @@ function saveProduct() {
         refreshProductSelects();
         closeAllModals();
         showNotification('Product saved successfully');
+     
+        
     }
+      try {
+    if (productId) {
+      // แก้ไขสินค้า
+      const index = products.findIndex(p => p.id == productId);
+      products[index] = newProduct;
+    } else {
+      // เพิ่มสินค้าใหม่
+      products.push(newProduct);
+    }
+    
+    await saveAllData();
+    showNotification('บันทึกสินค้าเรียบร้อย');
+  } catch (error) {
+    console.error("Error saving product:", error);
+    showNotification('บันทึกสินค้าไม่สำเร็จ', 'error');
+  }
 }
 
 function refreshProductsTable() {
@@ -748,17 +770,15 @@ function refreshProductsTable() {
         });
     });
 }
-
-function deleteProduct(productId) {
-    const index = products.findIndex(p => p.id === productId);
-    if (index !== -1) {
-        products.splice(index, 1);
-        saveAllData();
-        refreshProductsGrid();
-        refreshProductsTable();
-        refreshProductSelects();
-        showNotification('Product deleted successfully');
-    }
+async function deleteProduct(productId) {
+  try {
+    products = products.filter(p => p.id !== productId);
+    await saveAllData();
+    showNotification('ลบสินค้าเรียบร้อย');
+  } catch (error) {
+    console.error("Error deleting product:", error);
+    showNotification('ลบสินค้าไม่สำเร็จ', 'error');
+  }
 }
 
 function refreshProductsGrid() {
@@ -1044,7 +1064,7 @@ function applyPromoCode() {
     showNotification('Promo code applied successfully');
 }
 
-function processPayment(paymentMethod) {
+async function processPayment(paymentMethod) {
     if (cart.length === 0) {
         showNotification('ไม่มีสินค้าในตะกร้า', 'warning');
         return;
@@ -1090,6 +1110,21 @@ function processPayment(paymentMethod) {
     showReceipt(receipt);
     
     showNotification('บันทึกการขายเรียบร้อยแล้ว');
+  try {
+    sales.push(receipt);
+    
+    // อัพเดทสต็อกสินค้า
+    cart.forEach(item => {
+      const product = products.find(p => p.id === item.productId);
+      if (product) product.stock -= item.quantity;
+    });
+    
+    await saveAllData();
+    showReceipt(receipt);
+  } catch (error) {
+    console.error("Error processing payment:", error);
+    showNotification('บันทึกการขายไม่สำเร็จ', 'error');
+  }
 }
 
 function showReceipt(receipt) {
