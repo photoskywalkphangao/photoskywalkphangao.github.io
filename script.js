@@ -2,6 +2,20 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize the application
     initApp();
 });
+// config.js
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+// Initialize Firebase
+const app = firebase.initializeApp(firebaseConfig);
+const database = firebase.database(app);
 const waterProducts = [
     {
         id: 101,
@@ -378,30 +392,72 @@ function closeAllModals() {
 }
 
 // Load initial data from localStorage
-function loadInitialData() {
-    // ตั้งค่าหมวดหมู่
-    categories = ['น้ำดื่ม', 'ขนม', 'สมุนไพร', 'อื่นๆ'];
+async function loadInitialData() {
+  try {
+    const snapshot = await database.ref('posData').once('value');
+    const data = snapshot.val();
     
-    // ตรวจสอบว่ามีสินค้าใน localStorage หรือไม่
-    const savedProducts = localStorage.getItem('pos-products');
-    
-    if (!savedProducts) {
-        // ถ้าไม่มีข้อมูลใน localStorage ให้ใช้ข้อมูลตัวอย่าง
-        products = [
-            ...waterProducts,
-            ...snackProducts,
-            ...herbProducts,
-            ...otherProducts
-        ];
-        localStorage.setItem('pos-products', JSON.stringify(products));
+    if (data) {
+      products = data.products || [];
+      sales = data.sales || [];
+      expenses = data.expenses || [];
+      inventory = data.inventory || [];
+      heldCarts = data.heldCarts || [];
+      currentReceiptId = data.currentReceiptId || 1000;
     } else {
-        products = JSON.parse(savedProducts);
+      // ข้อมูลเริ่มต้นถ้าไม่มีข้อมูลใน Firebase
+      await initializeSampleData();
     }
     
-    refreshCategoryFilters();
-    refreshProductsGrid();
-    refreshProductsTable();
+    refreshAllDisplays();
+  } catch (error) {
+    console.error("Error loading data:", error);
+    showNotification('เกิดข้อผิดพลาดในการโหลดข้อมูล', 'error');
+  }
 }
+
+// แทนที่ฟังก์ชัน saveAllData
+async function saveAllData() {
+  try {
+    await database.ref('posData').set({
+      products,
+      sales,
+      expenses,
+      inventory,
+      heldCarts,
+      currentReceiptId
+    });
+  } catch (error) {
+    console.error("Error saving data:", error);
+    showNotification('เกิดข้อผิดพลาดในการบันทึกข้อมูล', 'error');
+  }
+}
+
+function setupRealtimeListeners() {
+  database.ref('posData').on('value', (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      products = data.products || [];
+      sales = data.sales || [];
+      // อัพเดท state อื่นๆ...
+      
+      refreshAllDisplays();
+      showNotification('อัพเดทข้อมูลล่าสุดเรียบร้อยแล้ว', 'success');
+    }
+  });
+}
+
+// ฟังก์ชันรีเฟรชการแสดงผลทั้งหมด
+function refreshAllDisplays() {
+  refreshProductsGrid();
+  refreshProductsTable();
+  refreshReceiptsTable();
+  refreshExpensesTable();
+  refreshInventoryTable();
+  refreshCategoryFilters();
+  refreshProductSelects();
+}
+
 function addSampleProducts() {
     // ตรวจสอบว่ามีสินค้าอยู่แล้วหรือไม่
     if (products.length > 0) {
