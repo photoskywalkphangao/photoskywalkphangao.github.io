@@ -1,421 +1,377 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <!-- เพิ่มก่อนไฟล์ JavaScript ของคุณ -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
-  <!-- เพิ่ม authentication ถ้าต้องการ -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
-</head>
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Retail POS System</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <title>ระบบ POS ร้านค้า</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="logo">
+                <i class="fas fa-store"></i>
+                <span>ร้านของฉัน</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#sale-page" class="active" id="nav-sale"><i class="fas fa-cash-register"></i> หน้าขาย</a></li>
+                <li><a href="#products-page" id="nav-products"><i class="fas fa-boxes"></i> สินค้า</a></li>
+                <li><a href="#receipts-page" id="nav-receipts"><i class="fas fa-receipt"></i> ใบเสร็จ</a></li>
+                <li><a href="#expenses-page" id="nav-expenses"><i class="fas fa-money-bill-wave"></i> รายจ่าย</a></li>
+                <li><a href="#inventory-page" id="nav-inventory"><i class="fas fa-truck-loading"></i> รับสินค้า</a></li>
+                <li><a href="#reports-page" id="nav-reports"><i class="fas fa-chart-line"></i> รายงาน</a></li>
+            </ul>
+            <div class="user-profile">
+                <img src="images/user-avatar.png" alt="User">
+                <span>ผู้ใช้งาน</span>
+            </div>
+        </nav>
 
-<header class="app-header">
-    <div class="logo">
-        <h1>ระบบขายหน้าร้าน</h1>
-        <div class="https://scontent.fbkk33-3.fna.fbcdn.net/v/t39.30808-6/402163213_310678941916630_3017703808046615906_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeHQLpv2nLVWYqTnVnWiAVpXW64iXAxWIWpbriJcDFYhavfQOuxyu_YS5kxLhmj38iyuOoIFZf3RAqSDrcrv9bdZ&_nc_ohc=NoIuPi0nnfwQ7kNvwHu6flQ&_nc_oc=AdnCWzVaP53Pt-qa9vom3416usB9R7kZb129b6VasxW-ZaALiO7bxsG4v7Ybwp7hlGg&_nc_zt=23&_nc_ht=scontent.fbkk33-3.fna&_nc_gid=5o9iB7ABYmRU12Hfqb_wWw&oh=00_AfQC-D7gbLGr6vFCHlDC60o4xIw4Dmci9Fz_dWrd-uNfhQ&oe=6878118B"></div>
-    </div>
-    <nav class="main-nav">
-        <ul>
-            <li><a href="#" class="active" id="nav-sales"><i class="fas fa-cash-register"></i> จุดขาย (POS)</a></li>
-            <li><a href="#" id="nav-products"><i class="fas fa-boxes"></i> สินค้า</a></li>
-            <li><a href="#" id="nav-receipts"><i class="fas fa-receipt"></i> ใบเสร็จ</a></li>
-            <li><a href="#" id="nav-expenses"><i class="fas fa-money-bill-wave"></i> ค่าใช้จ่าย</a></li>
-            <li><a href="#" id="nav-inventory"><i class="fas fa-truck"></i> สินค้าคงคลัง</a></li>
-            <li><a href="#" id="nav-reports"><i class="fas fa-chart-bar"></i> รายงาน</a></li>
-        </ul>
-    </nav>
-    <div class="user-info">
-        <span id="current-date-time"></span>
-    </div>
-</header>
-        <main class="app-main">
-            <!-- POS/Sales Section -->
-            <section id="sales-section" class="content-section active">
-                <div class="sales-container">
-                    <div class="product-display">
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Sale Page -->
+            <section id="sale-page" class="page active-page">
+                <!-- เนื้อหาหน้าการขาย -->
+                <h1><i class="fas fa-cash-register"></i> หน้าขายสินค้า</h1>
+                <div class="sale-container">
+                    <div class="product-list">
                         <div class="search-bar">
                             <input type="text" id="product-search" placeholder="ค้นหาสินค้า...">
                             <button id="search-btn"><i class="fas fa-search"></i></button>
                         </div>
-                        <div class="category-filter">
-                            <select id="category-select">
-                                <option value="all">ทั้งหมด</option>
-                                <option value="all">ทั้งหมด</option>
-                                <option value="น้ำดื่ม">น้ำดื่ม</option>
-                                <option value="ขนม">ขนม</option>
-                                <option value="สมุนไพร">สมุนไพร</option>
-                                <option value="อื่นๆ">อื่นๆ</option>
-                            </select>
+                        <div class="category-tabs">
+                            <button class="category-btn active" data-category="all">ทั้งหมด</button>
+                            <button class="category-btn" data-category="น้ำดื่ม">น้ำดื่ม</button>
+                            <button class="category-btn" data-category="ขนม">ขนม</button>
+                            <button class="category-btn" data-category="สมุนไพร">สมุนไพร</button>
+                            <button class="category-btn" data-category="อื่นๆ">อื่นๆ</button>
                         </div>
                         <div class="products-grid" id="products-grid">
-                            <!-- Products will be loaded here -->
+                            <!-- ข้อมูลสินค้าจะถูกโหลดโดย JavaScript -->
                         </div>
                     </div>
-                    <div class="cart-display">
+                    <div class="cart-section">
                         <div class="cart-header">
                             <h2>รายการขาย</h2>
                             <div class="cart-actions">
-                                    <button id="clear-cart" class="btn-danger">ล้างทั้งหมด</button>
-                                   <button id="hold-cart" class="btn-warning">เก็บไว้ชั่วคราว</button>
+                                <button id="clear-cart" class="btn-danger"><i class="fas fa-trash"></i> ล้างทั้งหมด</button>
                             </div>
                         </div>
                         <div class="cart-items" id="cart-items">
-                            <!-- Cart items will be displayed here -->
+                            <!-- ข้อมูลตะกร้าสินค้าจะถูกโหลดโดย JavaScript -->
                         </div>
                         <div class="cart-summary">
                             <div class="summary-row">
-                                <span>Subtotal:</span>
-                                <span id="subtotal">฿0.00</span>
+                                <span>รวม:</span>
+                                <span id="subtotal">0.00 ฿</span>
                             </div>
                             <div class="summary-row">
-                                <span>Discount:</span>
-                                <span id="discount">฿0.00</span>
+                                <span>ส่วนลด:</span>
+                                <span id="discount">0.00 ฿</span>
                             </div>
                             <div class="summary-row total">
-                                <span>Total:</span>
-                                <span id="total">฿0.00</span>
+                                <span>รวมสุทธิ:</span>
+                                <span id="total">0.00 ฿</span>
                             </div>
-                            <div class="promo-section">
-                                <input type="text" id="promo-code" placeholder="Promo code">
-                                <button id="apply-promo" class="btn-secondary">Apply</button>
-                            </div>
-                            <div class="payment-options">
-                                <button id="cash-payment" class="btn-success">เงินสด</button>
-                                <button id="card-payment" class="btn-primary">เงินโอน</button>
-                                <button id="other-payment" class="btn-info">Other</button>
-                            </div>
+                            <button id="checkout-btn" class="btn-primary">ชำระเงิน</button>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Products Section -->
-            <section id="products-section" class="content-section">
-                <div class="section-header">
-                    <h2>จัดการสินค้า</h2>
-                    <button id="add-product-btn" class="btn-primary">เพิ่มสินค้า</button>
-                    <button id="add-sample-products-btn"></button>
+            <!-- Products Page -->
+            <section id="products-page" class="page">
+                <div class="page-header">
+                    <h1><i class="fas fa-boxes"></i> จัดการสินค้า</h1>
+                    <button id="add-product-btn" class="btn-primary"><i class="fas fa-plus"></i> เพิ่มสินค้า</button>
                 </div>
-                <div class="products-table-container">
-                    <table class="data-table" id="products-table">
+                <div class="table-container">
+                    <table id="products-table">
                         <thead>
                             <tr>
-                                <th>Image</th>
-                                <th>Name</th>
-                                <th>Category</th>
-                                <th>Price</th>
-                                <th>Cost</th>
-                                <th>Stock</th>
-                                <th>Actions</th>
+                                <th>รูปภาพ</th>
+                                <th>ชื่อสินค้า</th>
+                                <th>หมวดหมู่</th>
+                                <th>ราคาขาย</th>
+                                <th>ต้นทุน</th>
+                                <th>คงเหลือ</th>
+                                <th>การกระทำ</th>
                             </tr>
                         </thead>
                         <tbody id="products-table-body">
-                            <!-- Products will be loaded here -->
+                            <!-- ข้อมูลสินค้าจะถูกโหลดโดย JavaScript -->
                         </tbody>
                     </table>
                 </div>
             </section>
 
-            <!-- Receipts Section -->
-            <section id="receipts-section" class="content-section">
-                <div class="section-header">
-                    <h2>ประวัติการขาย</h2>
-                    <div class="date-filter">
-                        <input type="date" id="receipts-date-filter">
-                        <button id="filter-receipts" class="btn-secondary">ค้นหา</button>
-                    </div>
+            <!-- Receipts Page -->
+            <section id="receipts-page" class="page">
+                <h1><i class="fas fa-receipt"></i> ใบเสร็จ</h1>
+                <div class="filter-bar">
+                    <input type="date" id="receipt-date-filter">
+                    <button id="filter-receipts" class="btn-primary">ค้นหา</button>
+                    <button id="reset-receipts-filter" class="btn-secondary">รีเซ็ต</button>
                 </div>
-                <div class="receipts-table-container">
-                    <table class="data-table" id="receipts-table">
+                <div class="table-container">
+                    <table id="receipts-table">
                         <thead>
                             <tr>
-                                <th>Receipt #</th>
-                                <th>Date</th>
-                                <th>Items</th>
-                                <th>Total</th>
-                                <th>Payment</th>
-                                <th>Actions</th>
+                                <th>เลขที่ใบเสร็จ</th>
+                                <th>วันที่</th>
+                                <th>จำนวนสินค้า</th>
+                                <th>รวม</th>
+                                <th>การกระทำ</th>
                             </tr>
                         </thead>
                         <tbody id="receipts-table-body">
-                            <!-- Receipts will be loaded here -->
+                            <!-- ข้อมูลใบเสร็จจะถูกโหลดโดย JavaScript -->
                         </tbody>
                     </table>
                 </div>
             </section>
 
-            <!-- Expenses Section -->
-            <section id="expenses-section" class="content-section">
-                <div class="section-header">
-                    <h2>จัดการค่าใช้จ่าย</h2>
-                    <button id="add-expense-btn" class="btn-primary">เพิ่มค่าใช้จ่าย</button>
+            <!-- Expenses Page -->
+            <section id="expenses-page" class="page">
+                <div class="page-header">
+                    <h1><i class="fas fa-money-bill-wave"></i> รายจ่าย</h1>
+                    <button id="add-expense-btn" class="btn-primary"><i class="fas fa-plus"></i> เพิ่มรายจ่าย</button>
                 </div>
-                <div class="expenses-table-container">
-                    <table class="data-table" id="expenses-table">
+                <div class="filter-bar">
+                    <select id="expense-category-filter">
+                        <option value="all">ทั้งหมด</option>
+                        <option value="utility">ค่าน้ำค่าไฟ</option>
+                        <option value="salary">เงินเดือนพนักงาน</option>
+                        <option value="supply">วัสดุอุปกรณ์</option>
+                        <option value="inventory">สั่งซื้อสินค้า</option>
+                        <option value="other">อื่นๆ</option>
+                    </select>
+                    <input type="date" id="expense-date-filter">
+                    <button id="filter-expenses" class="btn-primary">ค้นหา</button>
+                    <button id="reset-expenses-filter" class="btn-secondary">รีเซ็ต</button>
+                </div>
+                <div class="table-container">
+                    <table id="expenses-table">
                         <thead>
                             <tr>
-                                <th>Date</th>
-                                <th>Description</th>
-                                <th>Category</th>
-                                <th>Amount</th>
-                                <th>Actions</th>
+                                <th>วันที่</th>
+                                <th>หมวดหมู่</th>
+                                <th>รายการ</th>
+                                <th>จำนวนเงิน</th>
+                                <th>หมายเหตุ</th>
+                                <th>การกระทำ</th>
                             </tr>
                         </thead>
                         <tbody id="expenses-table-body">
-                            <!-- Expenses will be loaded here -->
+                            <!-- ข้อมูลรายจ่ายจะถูกโหลดโดย JavaScript -->
                         </tbody>
                     </table>
                 </div>
             </section>
 
-            <!-- Inventory Section -->
-            <section id="inventory-section" class="content-section">
-                <div class="section-header">
-                    <h2>รับสินค้าเข้า</h2>
-                    <button id="add-inventory-btn" class="btn-primary">รับสินค้าใหม่</button>
+            <!-- Inventory Page -->
+            <section id="inventory-page" class="page">
+                <div class="page-header">
+                    <h1><i class="fas fa-truck-loading"></i> รับสินค้าเข้า</h1>
+                    <button id="add-inventory-btn" class="btn-primary"><i class="fas fa-plus"></i> รับสินค้าใหม่</button>
                 </div>
-                <div class="inventory-table-container">
-                    <table class="data-table" id="inventory-table">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Product</th>
-                                <th>Supplier</th>
-                                <th>Quantity</th>
-                                <th>Unit Cost</th>
-                                <th>Total Cost</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="inventory-table-body">
-                            <!-- Inventory records will be loaded here -->
-                        </tbody>
-                    </table>
+                <div class="inventory-form-container">
+                    <form id="inventory-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="inventory-date">วันที่รับสินค้า</label>
+                                <input type="date" id="inventory-date" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="inventory-supplier">ผู้จำหน่าย</label>
+                                <input type="text" id="inventory-supplier" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="inventory-product-select">เลือกสินค้า</label>
+                            <select id="inventory-product-select" class="select-product">
+                                <option value="">เลือกสินค้าจากรายการ</option>
+                            </select>
+                            <button type="button" id="add-new-product-btn" class="btn-secondary">+ สินค้าใหม่</button>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="inventory-product-name">ชื่อสินค้า</label>
+                                <input type="text" id="inventory-product-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="inventory-product-category">หมวดหมู่</label>
+                                <select id="inventory-product-category" required>
+                                    <option value="น้ำดื่ม">น้ำดื่ม</option>
+                                    <option value="ขนม">ขนม</option>
+                                    <option value="สมุนไพร">สมุนไพร</option>
+                                    <option value="อื่นๆ">อื่นๆ</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="inventory-quantity">จำนวน</label>
+                                <input type="number" id="inventory-quantity" min="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="inventory-cost">ราคาต้นทุนต่อหน่วย</label>
+                                <input type="number" id="inventory-cost" min="0" step="0.01" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="inventory-total">รวมทั้งสิ้น</label>
+                                <input type="text" id="inventory-total" readonly>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="inventory-notes">หมายเหตุ</label>
+                            <textarea id="inventory-notes" rows="2"></textarea>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="button" class="btn-secondary" id="cancel-inventory">ยกเลิก</button>
+                            <button type="submit" class="btn-primary">บันทึกรับสินค้า</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="inventory-history">
+                    <h3>ประวัติการรับสินค้า</h3>
+                    <div class="table-container">
+                        <table id="inventory-history-table">
+                            <thead>
+                                <tr>
+                                    <th>วันที่</th>
+                                    <th>ชื่อสินค้า</th>
+                                    <th>จำนวน</th>
+                                    <th>ต้นทุน/หน่วย</th>
+                                    <th>รวม</th>
+                                    <th>ผู้จำหน่าย</th>
+                                    <th>การกระทำ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventory-history-body">
+                                <!-- ข้อมูลประวัติจะถูกโหลดโดย JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
 
-            <!-- Reports Section -->
-            <section id="reports-section" class="content-section">
-                <div class="section-header">
-                    <h2>รายงานการขาย</h2>
-                    <div class="report-period">
-                        <select id="report-period">
-                             <option value="daily">รายวัน</option>
-                                <option value="weekly">รายสัปดาห์</option>
-                                <option value="monthly">รายเดือน</option>
-                        </select>
+            <!-- Reports Page -->
+            <section id="reports-page" class="page">
+                <h1><i class="fas fa-chart-line"></i> รายงาน</h1>
+                <div class="report-controls">
+                    <div class="time-period">
+                        <button class="period-btn active" data-period="day">รายวัน</button>
+                        <button class="period-btn" data-period="week">รายสัปดาห์</button>
+                        <button class="period-btn" data-period="month">รายเดือน</button>
+                        <button class="period-btn" data-period="year">รายปี</button>
+                    </div>
+                    <div class="date-selector">
                         <input type="date" id="report-date">
                         <button id="generate-report" class="btn-primary">สร้างรายงาน</button>
                     </div>
                 </div>
-                <div class="report-container">
-                    <div class="report-summary">
-                        <div class="summary-card">
-                            <h3>ยอดขายรวม</h3>
-                            <p id="total-sales">฿0.00 </p>
+                
+                <div class="summary-cards">
+                    <div class="card">
+                        <div class="card-icon income">
+                            <i class="fas fa-money-bill-wave"></i>
                         </div>
-                        <div class="summary-card">
-                            <h3>ค่าใช้จ่ายรวม</h3>
-                            <p id="total-expenses">฿0.00</p>
-                        </div>
-                        <div class="summary-card">
-                            <h3>กำไรขั้นต้น</h3>
-                            <p id="gross-profit">฿0.00</p>
-                        </div>
-                        <div class="summary-card">
-                            <h3>กำไรสุทธิ</h3>
-                            <p id="net-profit">฿0.00</p>
+                        <div class="card-content">
+                            <span class="card-title">รายรับทั้งหมด</span>
+                            <span class="card-value" id="total-income">0.00 ฿</span>
                         </div>
                     </div>
-                    <div class="report-charts">
-                        <canvas id="sales-chart" width="400" height="200"></canvas>
-                        <canvas id="profit-chart" width="400" height="200"></canvas>
+                    
+                    <div class="card">
+                        <div class="card-icon expense">
+                            <i class="fas fa-hand-holding-usd"></i>
+                        </div>
+                        <div class="card-content">
+                            <span class="card-title">รายจ่ายทั้งหมด</span>
+                            <span class="card-value" id="total-expense">0.00 ฿</span>
+                        </div>
                     </div>
-                    <div class="report-details">
-                        <div class="top-products">
-                            <h3>สินค้าขายดี</h3>
-                            <table class="data-table" id="top-products-table">
-                                <thead>
-                                    <tr>
-                                        <th>สินค้า</th>
-                                        <th>จำนวนที่ขาย</th>
-                                        <th>รายได้</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="top-products-body">
-                                    <!-- Top products will be loaded here -->
-                                </tbody>
-                            </table>
+                    
+                    <div class="card">
+                        <div class="card-icon profit">
+                            <i class="fas fa-calculator"></i>
                         </div>
-                        <div class="expense-breakdown">
-                             <h3>สรุปค่าใช้จ่าย</h3>
-                            <table class="data-table" id="expense-breakdown-table">
-                                <thead>
-                                    <tr>
-                                        <th>ประเภท</th>
-                                        <th>จำนวนเงิน</th>
-                                        <th>ร้อยละ</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="expense-breakdown-body">
-                                    <!-- Expense breakdown will be loaded here -->
-                                </tbody>
-                            </table>
+                        <div class="card-content">
+                            <span class="card-title">กำไรสุทธิ</span>
+                            <span class="card-value" id="net-profit">0.00 ฿</span>
                         </div>
+                    </div>
+                </div>
+                
+                <div class="report-charts">
+                    <div class="chart-container">
+                        <canvas id="sales-expense-chart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="report-tables">
+                    <div class="table-container">
+                        <h3>สินค้าขายดี</h3>
+                        <table id="top-products">
+                            <thead>
+                                <tr>
+                                    <th>อันดับ</th>
+                                    <th>ชื่อสินค้า</th>
+                                    <th>จำนวนขาย</th>
+                                    <th>ยอดขาย</th>
+                                </tr>
+                            </thead>
+                            <tbody id="top-products-body">
+                                <!-- ข้อมูลสินค้าขายดีจะถูกโหลดโดย JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="table-container">
+                        <h3>รายจ่ายหลัก</h3>
+                        <table id="top-expenses">
+                            <thead>
+                                <tr>
+                                    <th>หมวดหมู่</th>
+                                    <th>จำนวนเงิน</th>
+                                    <th>ร้อยละ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="top-expenses-body">
+                                <!-- ข้อมูลรายจ่ายหลักจะถูกโหลดโดย JavaScript -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </section>
         </main>
-
-        <!-- Modal Structure -->
-        <div class="modal" id="product-modal">
-            <div class="modal-content">
-                <span class="close-modal">&times;</span>
-                <h2 id="product-modal-title">เพิ่มสินค้า</h2>
-                <form id="product-form">
-                    <div class="form-group">
-                        <label for="product-name">ชื่อสินค้า</label>
-                        <input type="text" id="product-name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="product-category">หมวดหมู่</label>
-                        <select id="product-category" required>
-                            <option value="">เลือกหมวดหมู่</option>
-                            <option value="น้ำดื่ม">น้ำดื่ม</option>
-                            <option value="ขนม">ขนม</option>
-                            <option value="สมุนไพร">สมุนไพร</option>
-                            <option value="อื่นๆ">อื่นๆ</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="product-price">ราคาขาย</label>
-                        <input type="number" id="product-price" min="0" step="0.01" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="product-cost">ต้นทุน</label>
-                        <input type="number" id="product-cost" min="0" step="0.01" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="product-stock">จำนวนสต๊อก</label>
-                        <input type="number" id="product-stock" min="0" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="product-image">รูปภาพ</label>
-                        <input type="file" id="product-image" accept="image/*">
-                        <div class="image-preview" id="product-image-preview"></div>
-                    </div>
-                    <div class="form-group">
-                        <label for="product-description">อธิบาย</label>
-                        <textarea id="product-description" rows="3"></textarea>
-                    </div>
-                    <div class="form-actions">
-                        <button type="button" class="btn-secondary close-modal-btn">ยกเลิก</button>
-                        <button type="submit" class="btn-primary">บันทึก</button>
-                    </div>
-                    <input type="hidden" id="product-id">
-                </form>
-            </div>
-        </div>
-
-        <div class="modal" id="expense-modal">
-            <div class="modal-content">
-                <span class="close-modal">&times;</span>
-                <h2 id="expense-modal-title">เพิ่มค่าใช้จ่าย</h2>
-                <form id="expense-form">
-                    <div class="form-group">
-                        <label for="expense-date">วันที่</label>
-                        <input type="date" id="expense-date" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="expense-description">อธิบาย</label>
-                        <input type="text" id="expense-description" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="expense-category">หมวดหมู่</label>
-                        <select id="expense-category" required>
-                            <option value="">Select Category</option>
-                            <option value="Rent">ค่าเช่า</option>
-                            <option value="Utilities">สาธารณูปโภค</option>
-                            <option value="Salaries">เงินเดือน</option>
-                            <option value="Supplies">อุปกรณ์สิ้นเปลือง</option>
-                            <option value="Maintenance">ซ่อมบำรุง</option>
-                            <option value="Other">อื่นๆ</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="expense-amount">จำนวน</label>
-                        <input type="number" id="expense-amount" min="0" step="0.01" required>
-                    </div>
-                    <div class="form-actions">
-                        <button type="button" class="btn-secondary close-modal-btn">ยกเลิก</button>
-                        <button type="submit" class="btn-primary">บันทึกค่าใช้จ่าย</button>
-                    </div>
-                    <input type="hidden" id="expense-id">
-                </form>
-            </div>
-        </div>
-
-        <div class="modal" id="inventory-modal">
-            <div class="modal-content">
-                <span class="close-modal">&times;</span>
-                <h2 id="inventory-modal-title">รับสินค้าเข้า</h2>
-                <form id="inventory-form">
-                    <div class="form-group">
-                        <label for="inventory-date">วันที่รับสินค้า</label>
-                        <input type="date" id="inventory-date" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="inventory-product">ชื่อสินค้า</label>
-                        <select id="inventory-product" required class="form-control">
-                            <option value="">เลือกสินค้า</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="inventory-supplier">Supplier</label>
-                        <input type="text" id="inventory-supplier" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="inventory-quantity">จำนวน</label>
-                        <input type="number" id="inventory-quantity" min="1" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="inventory-unit-cost">ต้นทุนต่อหน่วย</label>
-                        <input type="number" id="inventory-unit-cost" min="0" step="0.01" required>
-                    </div>
-                    <div class="form-actions">
-                        <button type="button" class="btn-secondary close-modal-btn">ยกเลิก</button>
-                        <button type="submit" class="btn-primary">รับสินค้า</button>
-                    </div>
-                    <input type="hidden" id="inventory-id">
-                </form>
-            </div>
-        </div>
-
-        <div class="modal" id="receipt-modal">
-            <div class="modal-content wide-modal">
-                <span class="close-modal">&times;</span>
-                <h2>Receipt Details</h2>
-                <div class="receipt-details" id="receipt-details-content">
-                    <!-- Receipt details will be loaded here -->
-                </div>
-                <div class="modal-actions">
-                    <button class="btn-secondary close-modal-btn">Close</button>
-                    <button class="btn-primary" id="print-receipt">Print Receipt</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="notification" id="notification"></div>
     </div>
 
+    <!-- Modal Structure -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div id="modal-body">
+                <!-- Modal content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="script.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
